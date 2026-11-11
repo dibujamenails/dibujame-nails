@@ -21,7 +21,7 @@
   const agendaMessage = String(config.mensajeCita || 'Hola, me gustaría agendar una cita. 💅');
   const hrefs = {
     whatsapp: wa ? `https://wa.me/${wa}` : '',
-    agenda: wa ? `https://wa.me/${wa}?text=${encodeURIComponent(agendaMessage)}` : '',
+    agenda: '', // El calendario crea el enlace tras elegir fecha y hora.
     instagram: config.instagram || '',
     facebook: config.facebook || '',
     tiktok: config.tiktok || '',
@@ -40,6 +40,14 @@
   buttons.forEach(el => {
     const kind = el.dataset.link;
     const href = hrefs[kind];
+    if (kind === 'agenda') {
+      el.addEventListener('pointerdown', () => { el.classList.add('is-pressed'); vibrate(); });
+      el.addEventListener('pointercancel', () => el.classList.remove('is-pressed'));
+      el.addEventListener('pointerleave', () => el.classList.remove('is-pressed'));
+      el.addEventListener('pointerup', () => press(el, 220));
+      el.addEventListener('click', () => { press(el, 220); openAppointment(); });
+      return;
+    }
     if (href && kind === 'ubicacion' && el.tagName === 'BUTTON') {
       const anchor = document.createElement('a');
       for (const attr of el.attributes) {
@@ -76,6 +84,109 @@
     if (!href) el.addEventListener('keydown', event => {
       if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); el.click(); }
     });
+  });
+
+
+  // Solicitud de cita: selección local; la disponibilidad real la confirma el salón.
+  const overlay = document.getElementById('appointmentOverlay');
+  const dialog = overlay.querySelector('.appointment-dialog');
+  const closeAppointment = document.getElementById('appointmentClose');
+  const previousMonth = document.getElementById('previousMonth');
+  const nextMonth = document.getElementById('nextMonth');
+  const currentMonth = document.getElementById('currentMonth');
+  const appointmentDays = document.getElementById('appointmentDays');
+  const dateLabel = document.getElementById('selectedDateLabel');
+  const appointmentTime = document.getElementById('appointmentTime');
+  const availability = document.getElementById('checkAvailability');
+  const appointmentError = document.getElementById('appointmentError');
+  const appointmentTrigger = document.querySelector('[data-link="agenda"]');
+  let selectedDate = null;
+  let displayMonth = null;
+  let lastFocused = null;
+  const monthFormatter = new Intl.DateTimeFormat('es-MX', { month: 'long', year: 'numeric' });
+  const dayFormatter = new Intl.DateTimeFormat('es-MX', { weekday:'long',day:'numeric',month:'long',year:'numeric' });
+
+  // Devuelve la fecha de hoy en la zona horaria del salón (México), incluso para clientas en el extranjero.
+  function todayAtSalon() {
+    const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Mexico_City', year:'numeric',month:'numeric',day:'numeric' }).formatToParts(new Date());
+    const get = kind => Number(parts.find(part => part.type === kind).value);
+    return new Date(get('year'),get('month')-1,get('day'));
+  }
+  function dateKey(date) {
+    return [date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-');
+  }
+  function renderCalendar() {
+    const today = todayAtSalon();
+    const year = displayMonth.getFullYear();
+    const month = displayMonth.getMonth();
+    currentMonth.textContent = monthFormatter.format(displayMonth);
+    previousMonth.disabled = (year === today.getFullYear() && month === today.getMonth());
+    appointmentDays.replaceChildren();
+    const startOffset = (new Date(year,month,1).getDay()+6)%7; // Lunes primero.
+    for (let i=0;i<startOffset;i++) {
+      const spacer=document.createElement('span'); spacer.setAttribute('aria-hidden','true'); appointmentDays.append(spacer);
+    }
+    const total=new Date(year,month+1,0).getDate();
+    for (let day=1;day<=total;day++) {
+      const date=new Date(year,month,day);
+      const button=document.createElement('button');
+      button.type='button';button.className='appointment-day';button.textContent=String(day);
+      button.setAttribute('aria-label',dayFormatter.format(date));
+      button.disabled = date < today;
+      if (dateKey(date) === dateKey(today)) button.classList.add('is-today');
+      if (selectedDate && dateKey(date) === dateKey(selectedDate)) {
+        button.classList.add('selected');button.setAttribute('aria-pressed','true');
+      } else button.setAttribute('aria-pressed','false');
+      button.addEventListener('click',()=>{
+        selectedDate=date;appointmentError.textContent='';dateLabel.textContent=dayFormatter.format(date);
+        availability.disabled=false;renderCalendar();
+      });
+      appointmentDays.append(button);
+    }
+  }
+  function openAppointment() {
+    lastFocused=document.activeElement;
+    const today=todayAtSalon();
+    displayMonth=new Date((selectedDate||today).getFullYear(),(selectedDate||today).getMonth(),1);
+    appointmentError.textContent='';renderCalendar();
+    overlay.hidden=false;document.body.classList.add('appointment-open');
+    closeAppointment.focus();
+  }
+  function hideAppointment() {
+    overlay.hidden=true;document.body.classList.remove('appointment-open');
+    (lastFocused||appointmentTrigger).focus();
+  }
+  closeAppointment.addEventListener('click',hideAppointment);
+  overlay.addEventListener('click',event=>{if(event.target===overlay) hideAppointment();});
+  document.addEventListener('keydown',event=>{
+    if(overlay.hidden) return;
+    if(event.key==='Escape'){event.preventDefault();hideAppointment();return;}
+    if(event.key==='Tab'){
+      const focusable=[...dialog.querySelectorAll('button:not(:disabled),input:not(:disabled)')];
+      if(!focusable.length)return;
+      if(event.shiftKey && document.activeElement===focusable[0]){event.preventDefault();focusable.at(-1).focus();}
+      else if(!event.shiftKey && document.activeElement===focusable.at(-1)){event.preventDefault();focusable[0].focus();}
+    }
+  });
+  previousMonth.addEventListener('click',()=>{
+    displayMonth=new Date(displayMonth.getFullYear(),displayMonth.getMonth()-1,1);renderCalendar();
+  });
+  nextMonth.addEventListener('click',()=>{
+    displayMonth=new Date(displayMonth.getFullYear(),displayMonth.getMonth()+1,1);renderCalendar();
+  });
+  availability.addEventListener('click',()=>{
+    if (!selectedDate){appointmentError.textContent='Selecciona una fecha.';return;}
+    if(selectedDate < todayAtSalon()){appointmentError.textContent='Esa fecha ya pasó. Elige otra.';renderCalendar();return;}
+    const time=appointmentTime.value;
+    if(!/^([01]\d|2[0-3]):[0-5]\d$/.test(time)){
+      appointmentError.textContent='Selecciona también una hora para tu cita.';appointmentTime.focus();return;
+    }
+    if(!wa){appointmentError.textContent='No está configurado el WhatsApp del salón.';return;}
+    const dateText=dayFormatter.format(selectedDate);
+    const message=`Hola, vi la tarjeta digital de Dibújame Nails Studio 💅. Quisiera saber si tienen disponibilidad para el ${dateText} a las ${time}. ¿Me pueden confirmar si ese horario está libre? Gracias.`;
+    // No se registra ni se confirma una cita automáticamente.
+    const link=`https://wa.me/${wa}?text=${encodeURIComponent(message)}`;
+    window.location.assign(link);
   });
 
   const share = document.getElementById('shareButton');

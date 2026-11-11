@@ -1,37 +1,27 @@
-# Dibújame Nails Studio — Versión 3.1 (botones reales + ubicación)
+# Dibújame Nails Studio — Versión 4 (Calendario de solicitud de cita)
 
-La tarjeta digital ahora está construida con **elementos HTML y CSS interactivos**; ya no es una imagen con áreas invisibles encima. Conserva el logo aprobado y tiene animación de presión, relieve, colores rosa-vino y dorado y diseño para celular. La vibración ligera se activa únicamente cuando el dispositivo/navegador la soporta (muchos iPhone no lo hacen).
+Sitio estático de enlaces para GitHub Pages, con calendario interactivo de citas.
 
-## Enlaces configurados
+## Qué cambia
 
-- WhatsApp: `https://wa.me/522284045606` (número proporcionado: 2284045606).
-- Agenda: abre WhatsApp con un mensaje preparado. **No es un sistema de calendario ni reserva automática**.
-- Instagram: https://www.instagram.com/dibujame_nails/
-- Facebook: https://www.facebook.com/profile.php?id=61552756146185
-- TikTok: https://www.tiktok.com/@bonitatunailsx (conserva el usuario publicado aunque el negocio se llame Dibújame).
-- Ubicación: https://www.google.com/maps?q=19.556879,-96.916771 (abre Google Maps con las coordenadas proporcionadas).
+- **Agenda tu cita** abre un calendario integrado (sin salir de la página).
+- El cliente elige fecha y hora; las fechas anteriores a hoy aparecen deshabilitadas.
+- Al tocar **Consultar disponibilidad por WhatsApp**, se crea un mensaje con la fecha y la hora seleccionadas para el número `2284045606`.
+- **Importante**: es una *solicitud de disponibilidad*, **no una cita confirmada**. El salón debe responder por WhatsApp. No se muestran horarios libres/ocupados reales sin agenda compartida y backend.
+- Se conserva el logo y los enlaces de Instagram, Facebook, TikTok y Maps.
 
-Puedes editar los enlaces directamente en `js/config.js`.
+## Cómo actualizar en GitHub
 
-## Actualizar GitHub Pages
+En https://github.com/dibujamenails/dibujame-nails sube el **contenido** de esta carpeta con `Add file → Upload files`, reemplazando la versión anterior.
 
-Repositorio: https://github.com/dibujamenails/dibujame-nails
+Archivos actualizados: `index.html`, `css/styles.css`, `js/app.js` y este `README.md`. Las imágenes y `js/config.js` se incluyen por comodidad y se conservan sin cambios.
 
-1. Descomprime el ZIP.
-2. En GitHub abre **Add file → Upload files** en la rama `main` y carga los **contenidos** de esta carpeta (`index.html`, `css/`, `js/`, `assets/`, `README.md`), no el ZIP ni una subcarpeta que los envuelva.
-3. Reemplaza los archivos de igual nombre y confirma el cambio con **Commit changes**.
-4. GitHub Pages ya estaba activado en `main` y `/ (root)`, así que debería publicar la nueva versión. Abre https://dibujamenails.github.io/dibujame-nails/.
-5. Si continúa la versión anterior, recarga sin caché. Los archivos llevan `?v=3.1` en sus referencias para evitar el caché viejo.
+No subas una carpeta `dibujame-nails-v4-calendario` dentro del repositorio: el `index.html` tiene que quedar en la raíz.
 
-El archivo viejo `assets/tarjeta-digital.webp` ya **no se utiliza**; puedes borrarlo de GitHub si lo deseas, sin afectar a la nueva tarjeta.
+Si se ve una versión vieja, recarga sin caché o añade `?v=4` a la dirección del sitio.
 
-## Estructura
+## Publicación
 
-- `index.html`: logo, botones HTML, SVG de iconos y contenido
-- `css/styles.css`: diseño táctil, sombras, transiciones y versión móvil
-- `js/config.js`: enlaces y mensaje de WhatsApp
-- `js/app.js`: enlace de cita, animación de pulsación, compartir y mensajes
-- `assets/logo-original.png`: logo aprobado sin alteraciones
-- `assets/favicon.svg`: ícono del navegador
+GitHub Pages: https://dibujamenails.github.io/dibujame-nails/
 
-No requiere framework, base de datos, servidor especial ni pagos; funciona con GitHub Pages.
+No requiere base de datos, registro, cuenta de Google ni pago mensual. Sin plataforma de disponibilidad no es posible bloquear horarios ocupados o confirmar citas automáticamente.

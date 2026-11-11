@@ -15,9 +15,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Great+Vibes&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=3.1">
-  <script src="js/config.js?v=3.1" defer></script>
-  <script src="js/app.js?v=3.1" defer></script>
+  <link rel="stylesheet" href="css/styles.css?v=4.0">
+  <script src="js/config.js?v=4.0" defer></script>
+  <script src="js/app.js?v=4.0" defer></script>
   <title>Dibújame Nails Studio · Enlaces</title>
 </head>
 <body>
@@ -53,12 +53,12 @@
           <span class="action-copy"><strong>WhatsApp</strong><small>Escríbenos directamente</small></span>
           <span class="action-arrow" aria-hidden="true"><svg class="line-icon"><use href="#i-arrow"/></svg></span>
         </a>
-        <a class="action-link action-agenda" data-link="agenda" href="https://wa.me/522284045606" aria-label="Agendar cita por WhatsApp">
+        <button class="action-link action-agenda" type="button" data-link="agenda" aria-haspopup="dialog" aria-controls="appointmentOverlay" aria-label="Elegir fecha y hora para consultar disponibilidad">
           <span class="icon-wrap"><svg class="line-icon" aria-hidden="true"><use href="#i-calendar"/></svg></span>
           <span class="vertical-stroke" aria-hidden="true"></span>
-          <span class="action-copy"><strong>Agenda tu cita</strong><small>Reserva por WhatsApp</small></span>
+          <span class="action-copy"><strong>Agenda tu cita</strong><small>Elige fecha y consulta horarios</small></span>
           <span class="action-arrow" aria-hidden="true"><svg class="line-icon"><use href="#i-arrow"/></svg></span>
-        </a>
+        </button>
         <a class="action-link action-instagram" data-link="instagram" href="https://www.instagram.com/dibujame_nails/" aria-label="Visita nuestro Instagram">
           <span class="icon-wrap"><svg class="line-icon" aria-hidden="true"><use href="#i-instagram"/></svg></span>
           <span class="vertical-stroke" aria-hidden="true"></span>
@@ -91,6 +91,41 @@
         <button id="shareButton" class="share-button" type="button"><svg class="line-icon" aria-hidden="true"><use href="#i-share"/></svg> Compartir tarjeta</button>
       </footer>
     </main>
+  </div>
+  <!-- Selector interactivo de fecha y hora. No bloquea ni confirma citas automáticamente. -->
+  <div class="appointment-overlay" id="appointmentOverlay" hidden>
+    <section class="appointment-dialog" role="dialog" aria-modal="true" aria-labelledby="appointmentTitle" aria-describedby="appointmentInfo" tabindex="-1">
+      <div class="appointment-head">
+        <div>
+          <span class="appointment-eyebrow">DIBÚJAME NAILS STUDIO</span>
+          <h2 id="appointmentTitle">¿Cuándo te gustaría venir?</h2>
+        </div>
+        <button class="appointment-close" id="appointmentClose" type="button" aria-label="Cerrar calendario">×</button>
+      </div>
+      <p class="appointment-info" id="appointmentInfo">Elige una fecha y hora para preguntar por disponibilidad. <strong>Tu cita no queda reservada</strong> hasta que te confirmemos por WhatsApp.</p>
+      <div class="appointment-month-nav">
+        <button id="previousMonth" type="button" aria-label="Mes anterior">‹</button>
+        <strong id="currentMonth" aria-live="polite"></strong>
+        <button id="nextMonth" type="button" aria-label="Mes siguiente">›</button>
+      </div>
+      <div class="appointment-weekdays" aria-hidden="true">
+        <span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span><span>Dom</span>
+      </div>
+      <div id="appointmentDays" class="appointment-days" aria-label="Selecciona día"></div>
+      <div class="appointment-fields">
+        <div class="appointment-date-confirm" aria-live="polite">
+          <span>Fecha elegida</span>
+          <strong id="selectedDateLabel">Selecciona un día en el calendario</strong>
+        </div>
+        <label class="appointment-time-label" for="appointmentTime">
+          <span>Hora que prefieres</span>
+          <input id="appointmentTime" type="time" required autocomplete="off">
+        </label>
+      </div>
+      <button id="checkAvailability" class="appointment-submit" type="button" disabled>Consultar disponibilidad por WhatsApp <span aria-hidden="true">↗</span></button>
+      <p class="appointment-error" id="appointmentError" role="status" aria-live="polite"></p>
+      <p class="appointment-footnote">Te responderemos para confirmar si tenemos espacio en el día y horario que solicitaste.</p>
+    </section>
   </div>
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 </body>
