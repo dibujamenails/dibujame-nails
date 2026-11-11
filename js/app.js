@@ -104,6 +104,8 @@
   const live = document.getElementById('liveAvailability');
   const liveStatus = document.getElementById('liveStatus');
   const slotGrid = document.getElementById('slotGrid');
+  const sundayWhatsApp = document.getElementById('sundayWhatsapp');
+  const customerFields = document.getElementById('customerFields');
   const nameInput = document.getElementById('customerName');
   const phoneInput = document.getElementById('customerPhone');
   const serviceInput = document.getElementById('serviceNote');
@@ -115,7 +117,7 @@
   live.hidden = !hasLive;
   const info = document.getElementById('appointmentInfo');
   if (hasLive) {
-    info.innerHTML = 'Selecciona tu fecha y un horario libre. <strong>El lugar se apartará durante 30 minutos mientras nos escribes por WhatsApp; el salón debe confirmar tu cita.</strong>';
+    info.innerHTML = 'Lunes a sábado: <strong>8:00–11:00 a. m. y 3:00–6:00 p. m.</strong> Domingos: cita anticipada por WhatsApp. Las solicitudes normales se apartan por 30 minutos y requieren confirmación del salón.';
     availabilityButton.innerHTML = 'Apartar horario y abrir WhatsApp <span aria-hidden="true">↗</span>';
   } else {
     document.querySelector('.appointment-footnote').textContent = 'La agenda automática se está configurando. Por ahora te confirmamos disponibilidad por WhatsApp.';
@@ -195,11 +197,19 @@
     if (!selectedDate || !hasLive) return;
     const id=++requestId;
     loading=true;chosenTime='';latestSlots=[];renderSlots();updateSubmit();
+    sundayWhatsApp.hidden=true;customerFields.hidden=false;
     liveStatus.textContent='Consultando horarios libres…';
     try {
       const data=await callBooking('availability',{date:dateKey(selectedDate)});
       if(id!==requestId)return;
       latestSlots=data.slots||[];
+      const sunday=selectedDate.getDay()===0;
+      sundayWhatsApp.hidden=!sunday;
+      customerFields.hidden=sunday;
+      if(sunday && wa) {
+        const message=`Hola, vi la tarjeta digital de Dibújame Nails Studio 💅. Me gustaría solicitar una cita anticipada para el domingo ${dayFormatter.format(selectedDate)}. ¿Tienen algún horario disponible?`;
+        sundayWhatsApp.href=`https://wa.me/${wa}?text=${encodeURIComponent(message)}`;
+      }
       liveStatus.textContent=data.closed?(data.reason||'Este día no hay servicio'):
         latestSlots.length ? `${latestSlots.length} horario(s) libre(s). Duración estimada: ${data.durationMinutes} minutos.` : 'No quedan horarios disponibles ese día.';
       renderSlots();

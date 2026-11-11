@@ -15,9 +15,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Great+Vibes&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=5.1">
-  <script src="js/config.js?v=5.1" defer></script>
-  <script src="js/app.js?v=5.1" defer></script>
+  <link rel="stylesheet" href="css/styles.css?v=6.0">
+  <script src="js/config.js?v=6.0" defer></script>
+  <script src="js/app.js?v=6.0" defer></script>
   <title>Dibújame Nails Studio · Enlaces</title>
 </head>
 <body>
@@ -102,7 +102,7 @@
         </div>
         <button class="appointment-close" id="appointmentClose" type="button" aria-label="Cerrar calendario">×</button>
       </div>
-      <p class="appointment-info" id="appointmentInfo">Elige un día y consulta los horarios disponibles. <strong>El salón confirma tu cita por WhatsApp.</strong></p>
+      <p class="appointment-info" id="appointmentInfo">Lunes a sábado: <strong>8:00–11:00 a. m. y 3:00–6:00 p. m.</strong> Domingos: solo con cita anticipada por WhatsApp.</p>
       <div class="appointment-month-nav">
         <button id="previousMonth" type="button" aria-label="Mes anterior">‹</button>
         <strong id="currentMonth" aria-live="polite"></strong>
@@ -126,7 +126,8 @@
         <h3>Horarios disponibles <span aria-hidden="true">✦</span></h3>
         <p class="live-status" id="liveStatus" role="status" aria-live="polite">Selecciona un día para consultar.</p>
         <div class="slot-grid" id="slotGrid" role="group" aria-label="Selecciona una hora libre"></div>
-        <div class="customer-fields">
+        <a id="sundayWhatsapp" class="sunday-whatsapp" href="https://wa.me/522284045606" target="_blank" rel="noopener noreferrer" hidden>Consultar cita anticipada para domingo por WhatsApp ↗</a>
+        <div class="customer-fields" id="customerFields">
           <label>Tu nombre <input id="customerName" type="text" maxlength="80" placeholder="Nombre para tu cita" autocomplete="name"></label>
           <label>Tu WhatsApp (10 dígitos) <input id="customerPhone" type="tel" maxlength="18" inputmode="tel" placeholder="Ej. 2281234567" autocomplete="tel-national"></label>
           <label>Servicio o diseño (opcional) <input id="serviceNote" type="text" maxlength="150" placeholder="Ej. Gelish o acrílico"></label>

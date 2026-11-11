@@ -31,13 +31,20 @@
   }
   const dayNames=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
   function scheduleRow(day){
-    const row=el('div',undefined,'day-row'), enabled=el('input'),start=el('input'),end=el('input'),save=el('button','Guardar');
-    enabled.type='checkbox';enabled.checked=day.enabled;start.type='time';start.value=safe(day.opens_at).slice(0,5);end.type='time';end.value=safe(day.closes_at).slice(0,5);
+    const row=el('div',undefined,'day-row');
+    const enabled=el('input'),start=el('input'),end=el('input'),start2=el('input'),end2=el('input'),save=el('button','Guardar');
+    enabled.type='checkbox';enabled.checked=day.enabled;
+    for(const item of [start,end,start2,end2]) item.type='time';
+    start.value=safe(day.opens_at).slice(0,5);end.value=safe(day.closes_at).slice(0,5);
+    start2.value=safe(day.opens_at2).slice(0,5);end2.value=safe(day.closes_at2).slice(0,5);
     row.append(el('strong',dayNames[day.weekday]));
-    const active=el('label','');active.append(enabled,document.createTextNode('Abierto'));
-    const s=el('label','Desde: ');s.append(start);const e=el('label','Hasta: ');e.append(end);
-    row.append(active,s,e,save);
-    save.addEventListener('click',async()=>{save.disabled=true;try{await post({action:'admin_schedule',weekday:day.weekday,enabled:enabled.checked,opens:start.value,closes:end.value});note('Horario guardado');await refresh();}catch(err){note(err.message);save.disabled=false;}});
+    const active=el('label','');active.append(enabled,document.createTextNode('Reservas web'));
+    function field(label, input){const x=el('label',label);x.append(input);return x}
+    row.append(active,field('Mañana, desde: ',start),field('hasta: ',end),field('Tarde, desde: ',start2),field('hasta: ',end2),save);
+    save.addEventListener('click',async()=>{save.disabled=true;
+      try{await post({action:'admin_schedule',weekday:day.weekday,enabled:enabled.checked,opens:start.value,closes:end.value,opens2:start2.value,closes2:end2.value});
+        note('Horario guardado');await refresh();}catch(err){note(err.message);save.disabled=false;}
+    });
     return row;
   }
   async function refresh(){try{
@@ -63,6 +70,14 @@
   $('logout').addEventListener('click',()=>{sessionStorage.removeItem('dn_admin_session');token='';showLogin();note('Sesión cerrada');});
   $('refresh').addEventListener('click',refresh);
   $('saveSettings').addEventListener('click',async()=>{try{await post({action:'admin_settings',duration:Number($('duration').value),step:Number($('step').value)});note('Duración actualizada');await refresh();}catch(e){note(e.message);}});
+  $('sundayBookingForm').addEventListener('submit',async(event)=>{event.preventDefault();
+    const btn=event.target.querySelector('button[type=submit]');btn.disabled=true;
+    try{
+      await post({action:'admin_sunday_booking',date:$('sundayDate').value,time:$('sundayTime').value,
+        name:$('sundayName').value.trim(),phone:$('sundayPhone').value.replace(/\D/g,''),service:$('sundayService').value.trim()});
+      note('Cita dominical confirmada y registrada.');event.target.reset();await refresh();
+    }catch(error){note(error.message);}finally{btn.disabled=false;}
+  });
   $('blockDay').addEventListener('click',async()=>{try{await post({action:'admin_block',date:$('blockedDay').value,note:$('blockedReason').value});note('Día bloqueado');await refresh();}catch(e){note(e.message);}});
   if(token)refresh();else showLogin();
 })();

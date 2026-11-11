@@ -128,3 +128,8 @@ body.appointment-open { overflow:hidden; }
 .consent-field input {accent-color:#a92b5a;vertical-align:middle;margin-right:5px}
 .consent-field a {color:#8e2c53;text-underline-offset:3px}
 #manualTimeWrapper[hidden] {display:none!important}
+
+/* V6: domingos solo con solicitud anticipada por WhatsApp. */
+.sunday-whatsapp{display:block;margin:12px 0 4px;padding:13px 16px;text-align:center;border-radius:15px;background:linear-gradient(140deg,#8e2b56,#c04572);color:white;font-weight:700;text-decoration:none;box-shadow:0 4px 0 #6e2645;transition:transform .12s ease,box-shadow .12s ease}
+.sunday-whatsapp:active{transform:translateY(4px);box-shadow:0 1px 0 #6e2645}
+.sunday-whatsapp[hidden],.customer-fields[hidden]{display:none!important}

@@ -9,7 +9,7 @@
     input,select,button{font:inherit;padding:10px;border:1px solid #d2a0b2;border-radius:9px;max-width:100%}button{background:#8d3159;color:white;border:0;cursor:pointer;font-weight:700}button:disabled{opacity:.5}button.secondary{background:#ead8db;color:#60263f}
     .form-row{display:flex;gap:10px;align-items:end;flex-wrap:wrap}.form-row label{display:grid;gap:5px;font-size:13px}.form-row button{white-space:nowrap}.booking{padding:12px 0;border-bottom:1px solid #efdbe1;display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}.booking:last-child{border:0}.booking small{display:block;margin-top:4px;color:#7d5365}.booking strong{display:block}.actions{display:flex;gap:7px;flex-wrap:wrap}.message{min-height:22px;color:#87304f;font-weight:600}.day-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;border-bottom:1px solid #eee;padding:9px 0}.day-row>strong{min-width:95px}.day-row label{font-size:12px;display:flex;align-items:center;gap:3px}.day-row input[type=time]{width:115px}#dashboard[hidden],#loginSection[hidden]{display:none}a{color:#9c3260}nav{display:flex;justify-content:space-between;align-items:center}
   </style>
-  <script src="js/config.js?v=5.1" defer></script><script src="js/admin.js?v=5.1" defer></script>
+  <script src="js/config.js?v=6.0" defer></script><script src="js/admin.js?v=6.0" defer></script>
 </head>
 <body><main>
   <nav><h1>💅 Dibújame · Agenda</h1><a href="index.html">Ver tarjeta</a></nav>
@@ -25,7 +25,18 @@
   <div id="dashboard" hidden>
     <div class="form-row"><button id="refresh" type="button">Actualizar agenda</button><button id="logout" type="button" class="secondary">Cerrar sesión</button></div>
     <section><h2>Solicitudes y citas</h2><p>Las solicitudes pendientes se liberan si no las confirmas antes de 30 minutos.</p><div id="bookings"></div></section>
-    <section><h2>Horario de atención semanal</h2><p>Activa los días que atiendes. Los días cerrados no muestran horarios.</p><div id="schedule"></div></section>
+    <section><h2>Horario de atención semanal</h2><p>Lunes a sábado tienen dos turnos. Si no utilizas el turno de tarde, deja vacías sus dos horas. El domingo se mantiene cerrado para reservas automáticas: las citas anticipadas se consultan por WhatsApp.</p><div id="schedule"></div></section>
+    <section><h2>Citas especiales de domingo</h2>
+      <p>Cuando acuerdes una cita dominical por WhatsApp, regístrala aquí para conservarla en la agenda. Solo la administradora puede hacer este registro.</p>
+      <form id="sundayBookingForm" class="form-row">
+        <label>Domingo elegido<input id="sundayDate" type="date" required></label>
+        <label>Hora acordada<input id="sundayTime" type="time" required></label>
+        <label>Nombre de la clienta<input id="sundayName" type="text" maxlength="80" required></label>
+        <label>WhatsApp (10 dígitos)<input id="sundayPhone" type="tel" maxlength="18" required></label>
+        <label>Servicio (opcional)<input id="sundayService" type="text" maxlength="150"></label>
+        <button type="submit">Guardar cita confirmada</button>
+      </form>
+    </section>
     <section><h2>Duración de las citas</h2>
       <div class="form-row"><label>Tiempo por cita<select id="duration"><option value="30">30 minutos</option><option value="60">60 minutos</option><option value="90">90 minutos</option><option value="120">120 minutos</option><option value="150">150 minutos</option><option value="180">180 minutos</option></select></label>
       <label>Intervalo para ofrecer horarios<select id="step"><option value="15">Cada 15 minutos</option><option value="30">Cada 30 minutos</option><option value="60">Cada hora</option></select></label><button id="saveSettings" type="button">Guardar duración</button></div>
