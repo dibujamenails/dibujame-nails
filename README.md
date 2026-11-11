@@ -1,52 +1,34 @@
-# Dibújame Nails Studio — versión 1
+# Dibújame Nails Studio — Tarjeta digital V2
 
-Micrositio móvil para reunir enlaces del estudio de uñas. Desarrollado con HTML, CSS y JavaScript puro, sin servicios de pago ni base de datos.
+Sitio de una sola pantalla visual diseñado para celular con accesos táctiles a WhatsApp, citas, Instagram, Facebook, TikTok y ubicación. **No es una página tipo revista o un catálogo**; es una tarjeta de enlaces interactiva, siguiendo el boceto aprobado.
 
-## Ya funciona
+## Actualizar tu GitHub
 
-- Página responsive, con estilo propio y el **logo original aprobado** en `assets/logo-original.png` (no se ha redibujado ni modificado).
-- Enlaces de Instagram y Facebook proporcionados por el negocio.
-- Botón de compartir página.
-- Diseño apto para pantallas pequeñas y computadoras.
-- Enlaces opcionales para agendar por WhatsApp, TikTok y ubicación, que **no se muestran** hasta configurarlos.
+Repositorio: https://github.com/dibujamenails/dibujame-nails
 
-## Publicar en GitHub Pages
+1. Descomprime `dibujame-nails-v2.zip`.
+2. En el repositorio, usa **Add file → Upload files**.
+3. Sube **el contenido** de la carpeta descomprimida: `index.html`, `css/`, `js/`, `assets/` y este README.
+4. Confirma el commit sobre `main`. Los archivos del mismo nombre deben reemplazarse, no duplicarse dentro de una subcarpeta `dibujame-nails-v2/`.
+5. GitHub Pages ya está configurado desde `main` / `(root)`. Si sigue habilitado, publicará la actualización automáticamente.
+6. Abre https://dibujamenails.github.io/dibujame-nails/ y recarga sin caché si sigues viendo la versión anterior.
 
-1. Abre `https://github.com/dibujamenails/dibujame-nails` con la cuenta **dibujamenails**.
-2. Descomprime este ZIP en tu computadora.
-3. En GitHub, pulsa **Add file → Upload files** (si el repositorio está vacío, verás el enlace **uploading an existing file**).
-4. Sube **todo el contenido de la carpeta `dibujame-nails-v1`**, incluidos `index.html` y las carpetas `assets`, `css`, `js`. No subas el ZIP sin extraer.
-5. Pulsa **Commit changes**.
-6. En **Settings → Pages → Build and deployment**, elige **Deploy from a branch**, rama **main**, directorio **/(root)**; guarda.
-7. La dirección prevista será `https://dibujamenails.github.io/dibujame-nails/` una vez que GitHub publique la página.
+## Configuración
 
-## Agregar WhatsApp, TikTok o ubicación
+Edita **`js/config.js`**. Instagram y Facebook ya tienen enlaces reales. WhatsApp, TikTok y Maps están vacíos a propósito. Mientras estén sin configurar, al tocarlos aparece un mensaje de «Próximamente» y **no se inventan rutas**.
 
-Edita `js/config.js` en GitHub y agrega los valores faltantes:
+El botón «Agenda tu Cita» enviará un mensaje preescrito por WhatsApp tan pronto se configure el número.
 
-```js
-window.DIBUJAME_CONFIG = {
-  instagram: 'https://www.instagram.com/dibujame_nails/',
-  facebook: 'https://www.facebook.com/profile.php?id=61552756146185',
-  whatsapp: '521XXXXXXXXXX', // sustituir por el número VERDADERO, con clave de país
-  maps: 'https://maps.app.goo.gl/...',
-  tiktok: 'https://www.tiktok.com/@...',
-  mensajeCita: 'Hola, vi su página de Dibújame Nails Studio y me gustaría agendar una cita. 💅'
-};
-```
+## Archivos
 
-Solo activa números y enlaces confirmados. No se deben pegar datos ficticios. Al guardar los cambios, GitHub Pages los publicará automáticamente si ya está habilitado.
+- `index.html`: página y áreas táctiles sobre las tarjetas de la imagen
+- `css/styles.css`: diseño adaptable y zonas táctiles
+- `js/app.js`: apertura de enlaces, compartir y mensaje pendiente
+- `js/config.js`: enlaces del negocio
+- `assets/tarjeta-digital.webp`: composición visual aprobada para la portada
+- `assets/logo-original.png`: logo original completo para redes y metadatos
+- `assets/favicon.svg`: ícono de pestaña
 
-## Editar apariencia
+### Sobre la versión visual
 
-- Contenido principal: `index.html`
-- Colores, diseños y animaciones: `css/styles.css`
-- Comportamiento: `js/app.js`
-- Redes y contacto: `js/config.js`
-- Logo oficial: `assets/logo-original.png`
-
-## Notas
-
-- No incluye pasarela de pagos ni reservas con calendario propio.
-- El botón **Agenda tu cita** aparece únicamente cuando se configura un WhatsApp válido. Los enlaces faltantes no aparecen como botones rotos.
-- Algunas tipografías se cargan de Google Fonts; si no hay conexión se usan fuentes de respaldo.
+Esta versión coloca áreas de enlace reales sobre cada botón del diseño para obtener una apariencia muy cercana al boceto. Por ello, el texto visible pertenece a la imagen y los textos alternativos accesibles están en HTML. Para futuras variaciones frecuentes del diseño se recomendará reconstruir la composición completamente con elementos HTML editables.
