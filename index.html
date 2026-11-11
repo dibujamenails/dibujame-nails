@@ -15,9 +15,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Great+Vibes&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=4.0">
-  <script src="js/config.js?v=4.0" defer></script>
-  <script src="js/app.js?v=4.0" defer></script>
+  <link rel="stylesheet" href="css/styles.css?v=5.1">
+  <script src="js/config.js?v=5.1" defer></script>
+  <script src="js/app.js?v=5.1" defer></script>
   <title>Dibújame Nails Studio · Enlaces</title>
 </head>
 <body>
@@ -102,7 +102,7 @@
         </div>
         <button class="appointment-close" id="appointmentClose" type="button" aria-label="Cerrar calendario">×</button>
       </div>
-      <p class="appointment-info" id="appointmentInfo">Elige una fecha y hora para preguntar por disponibilidad. <strong>Tu cita no queda reservada</strong> hasta que te confirmemos por WhatsApp.</p>
+      <p class="appointment-info" id="appointmentInfo">Elige un día y consulta los horarios disponibles. <strong>El salón confirma tu cita por WhatsApp.</strong></p>
       <div class="appointment-month-nav">
         <button id="previousMonth" type="button" aria-label="Mes anterior">‹</button>
         <strong id="currentMonth" aria-live="polite"></strong>
@@ -117,14 +117,26 @@
           <span>Fecha elegida</span>
           <strong id="selectedDateLabel">Selecciona un día en el calendario</strong>
         </div>
-        <label class="appointment-time-label" for="appointmentTime">
+        <label class="appointment-time-label" id="manualTimeWrapper" for="appointmentTime">
           <span>Hora que prefieres</span>
           <input id="appointmentTime" type="time" required autocomplete="off">
         </label>
       </div>
+      <section class="live-availability" id="liveAvailability" hidden aria-label="Horarios disponibles en tiempo real">
+        <h3>Horarios disponibles <span aria-hidden="true">✦</span></h3>
+        <p class="live-status" id="liveStatus" role="status" aria-live="polite">Selecciona un día para consultar.</p>
+        <div class="slot-grid" id="slotGrid" role="group" aria-label="Selecciona una hora libre"></div>
+        <div class="customer-fields">
+          <label>Tu nombre <input id="customerName" type="text" maxlength="80" placeholder="Nombre para tu cita" autocomplete="name"></label>
+          <label>Tu WhatsApp (10 dígitos) <input id="customerPhone" type="tel" maxlength="18" inputmode="tel" placeholder="Ej. 2281234567" autocomplete="tel-national"></label>
+          <label>Servicio o diseño (opcional) <input id="serviceNote" type="text" maxlength="150" placeholder="Ej. Gelish o acrílico"></label>
+          <label class="consent-field"><input id="consentBooking" type="checkbox"> Autorizo el uso de mis datos exclusivamente para gestionar la cita. <a href="aviso-privacidad.html" target="_blank" rel="noopener">Aviso de privacidad</a></label>
+          <label class="honeypot" aria-hidden="true">No rellenes <input id="bookingWebsite" autocomplete="off" tabindex="-1"></label>
+        </div>
+      </section>
       <button id="checkAvailability" class="appointment-submit" type="button" disabled>Consultar disponibilidad por WhatsApp <span aria-hidden="true">↗</span></button>
       <p class="appointment-error" id="appointmentError" role="status" aria-live="polite"></p>
-      <p class="appointment-footnote">Te responderemos para confirmar si tenemos espacio en el día y horario que solicitaste.</p>
+      <p class="appointment-footnote">La solicitud puede apartar el horario por 30 minutos; tu cita se confirma únicamente cuando el salón la apruebe.</p>
     </section>
   </div>
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>

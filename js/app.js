@@ -87,7 +87,8 @@
   });
 
 
-  // Solicitud de cita: selección local; la disponibilidad real la confirma el salón.
+  // V5: al configurar el backend hay disponibilidad REAL y apartados temporales.
+  // Sin backend se conserva la consulta por WhatsApp, sin inventar horarios libres.
   const overlay = document.getElementById('appointmentOverlay');
   const dialog = overlay.querySelector('.appointment-dialog');
   const closeAppointment = document.getElementById('appointmentClose');
@@ -97,16 +98,37 @@
   const appointmentDays = document.getElementById('appointmentDays');
   const dateLabel = document.getElementById('selectedDateLabel');
   const appointmentTime = document.getElementById('appointmentTime');
-  const availability = document.getElementById('checkAvailability');
+  const availabilityButton = document.getElementById('checkAvailability');
   const appointmentError = document.getElementById('appointmentError');
   const appointmentTrigger = document.querySelector('[data-link="agenda"]');
+  const live = document.getElementById('liveAvailability');
+  const liveStatus = document.getElementById('liveStatus');
+  const slotGrid = document.getElementById('slotGrid');
+  const nameInput = document.getElementById('customerName');
+  const phoneInput = document.getElementById('customerPhone');
+  const serviceInput = document.getElementById('serviceNote');
+  const consentInput = document.getElementById('consentBooking');
+  const hiddenWebsite = document.getElementById('bookingWebsite');
+  const hasLive = /^https:\/\/[a-z0-9-]+\.supabase\.co\/functions\/v1\/appointments\/?$/i.test(config.bookingApiUrl || '');
+  const bookingApi = hasLive ? config.bookingApiUrl.replace(/\/$/, '') : '';
+  document.getElementById('manualTimeWrapper').hidden = hasLive;
+  live.hidden = !hasLive;
+  const info = document.getElementById('appointmentInfo');
+  if (hasLive) {
+    info.innerHTML = 'Selecciona tu fecha y un horario libre. <strong>El lugar se apartará durante 30 minutos mientras nos escribes por WhatsApp; el salón debe confirmar tu cita.</strong>';
+    availabilityButton.innerHTML = 'Apartar horario y abrir WhatsApp <span aria-hidden="true">↗</span>';
+  } else {
+    document.querySelector('.appointment-footnote').textContent = 'La agenda automática se está configurando. Por ahora te confirmamos disponibilidad por WhatsApp.';
+  }
   let selectedDate = null;
   let displayMonth = null;
   let lastFocused = null;
+  let chosenTime = '';
+  let latestSlots = [];
+  let loading = false;
+  let requestId = 0;
   const monthFormatter = new Intl.DateTimeFormat('es-MX', { month: 'long', year: 'numeric' });
   const dayFormatter = new Intl.DateTimeFormat('es-MX', { weekday:'long',day:'numeric',month:'long',year:'numeric' });
-
-  // Devuelve la fecha de hoy en la zona horaria del salón (México), incluso para clientas en el extranjero.
   function todayAtSalon() {
     const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Mexico_City', year:'numeric',month:'numeric',day:'numeric' }).formatToParts(new Date());
     const get = kind => Number(parts.find(part => part.type === kind).value);
@@ -115,6 +137,11 @@
   function dateKey(date) {
     return [date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-');
   }
+  function updateSubmit() {
+    if (!hasLive) {availabilityButton.disabled = !selectedDate;return;}
+    const digits = phoneInput.value.replace(/\D/g,'');
+    availabilityButton.disabled = loading || !selectedDate || !chosenTime || nameInput.value.trim().length<2 || digits.length!==10 || !consentInput.checked;
+  }
   function renderCalendar() {
     const today = todayAtSalon();
     const year = displayMonth.getFullYear();
@@ -122,7 +149,7 @@
     currentMonth.textContent = monthFormatter.format(displayMonth);
     previousMonth.disabled = (year === today.getFullYear() && month === today.getMonth());
     appointmentDays.replaceChildren();
-    const startOffset = (new Date(year,month,1).getDay()+6)%7; // Lunes primero.
+    const startOffset = (new Date(year,month,1).getDay()+6)%7;
     for (let i=0;i<startOffset;i++) {
       const spacer=document.createElement('span'); spacer.setAttribute('aria-hidden','true'); appointmentDays.append(spacer);
     }
@@ -138,11 +165,49 @@
         button.classList.add('selected');button.setAttribute('aria-pressed','true');
       } else button.setAttribute('aria-pressed','false');
       button.addEventListener('click',()=>{
-        selectedDate=date;appointmentError.textContent='';dateLabel.textContent=dayFormatter.format(date);
-        availability.disabled=false;renderCalendar();
+        selectedDate=date; chosenTime=''; latestSlots=[];
+        appointmentError.textContent='';dateLabel.textContent=dayFormatter.format(date);
+        renderCalendar(); updateSubmit();
+        if (hasLive) loadSlots();
       });
       appointmentDays.append(button);
     }
+  }
+  function renderSlots() {
+    slotGrid.replaceChildren();
+    latestSlots.forEach(hour => {
+      const b=document.createElement('button');b.type='button';b.textContent=hour;
+      b.setAttribute('aria-pressed',String(hour===chosenTime));
+      b.addEventListener('click',()=>{chosenTime=hour;renderSlots();updateSubmit();});
+      slotGrid.appendChild(b);
+    });
+  }
+  async function callBooking(action, payload) {
+    const url = action==='availability' ? `${bookingApi}?action=availability&date=${encodeURIComponent(payload.date)}` : bookingApi;
+    const response = await fetch(url, action==='availability' ? {method:'GET',cache:'no-store'} : {
+      method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...payload})
+    });
+    const data = await response.json().catch(()=>({error:'Respuesta inválida del servidor'}));
+    if (!response.ok) throw Object.assign(new Error(data.error||'Error al contactar la agenda'),{code:data.code||''});
+    return data;
+  }
+  async function loadSlots() {
+    if (!selectedDate || !hasLive) return;
+    const id=++requestId;
+    loading=true;chosenTime='';latestSlots=[];renderSlots();updateSubmit();
+    liveStatus.textContent='Consultando horarios libres…';
+    try {
+      const data=await callBooking('availability',{date:dateKey(selectedDate)});
+      if(id!==requestId)return;
+      latestSlots=data.slots||[];
+      liveStatus.textContent=data.closed?(data.reason||'Este día no hay servicio'):
+        latestSlots.length ? `${latestSlots.length} horario(s) libre(s). Duración estimada: ${data.durationMinutes} minutos.` : 'No quedan horarios disponibles ese día.';
+      renderSlots();
+    }catch(error){
+      if(id!==requestId)return;
+      liveStatus.textContent='No pudimos consultar la agenda en este momento. Intenta nuevamente.';
+      appointmentError.textContent=error.message;
+    }finally {if(id===requestId){loading=false;updateSubmit();}}
   }
   function openAppointment() {
     lastFocused=document.activeElement;
@@ -150,43 +215,54 @@
     displayMonth=new Date((selectedDate||today).getFullYear(),(selectedDate||today).getMonth(),1);
     appointmentError.textContent='';renderCalendar();
     overlay.hidden=false;document.body.classList.add('appointment-open');
+    if(hasLive && selectedDate)loadSlots();
     closeAppointment.focus();
   }
   function hideAppointment() {
-    overlay.hidden=true;document.body.classList.remove('appointment-open');
+    overlay.hidden=true;document.body.classList.remove('appointment-open');requestId++;
     (lastFocused||appointmentTrigger).focus();
   }
   closeAppointment.addEventListener('click',hideAppointment);
   overlay.addEventListener('click',event=>{if(event.target===overlay) hideAppointment();});
   document.addEventListener('keydown',event=>{
-    if(overlay.hidden) return;
+    if(overlay.hidden)return;
     if(event.key==='Escape'){event.preventDefault();hideAppointment();return;}
     if(event.key==='Tab'){
-      const focusable=[...dialog.querySelectorAll('button:not(:disabled),input:not(:disabled)')];
+      const focusable=[...dialog.querySelectorAll('button:not(:disabled),input:not(:disabled):not([tabindex="-1"]),a[href]')].filter(e=>e.offsetParent!==null);
       if(!focusable.length)return;
       if(event.shiftKey && document.activeElement===focusable[0]){event.preventDefault();focusable.at(-1).focus();}
       else if(!event.shiftKey && document.activeElement===focusable.at(-1)){event.preventDefault();focusable[0].focus();}
     }
   });
-  previousMonth.addEventListener('click',()=>{
-    displayMonth=new Date(displayMonth.getFullYear(),displayMonth.getMonth()-1,1);renderCalendar();
-  });
-  nextMonth.addEventListener('click',()=>{
-    displayMonth=new Date(displayMonth.getFullYear(),displayMonth.getMonth()+1,1);renderCalendar();
-  });
-  availability.addEventListener('click',()=>{
-    if (!selectedDate){appointmentError.textContent='Selecciona una fecha.';return;}
-    if(selectedDate < todayAtSalon()){appointmentError.textContent='Esa fecha ya pasó. Elige otra.';renderCalendar();return;}
+  previousMonth.addEventListener('click',()=>{displayMonth=new Date(displayMonth.getFullYear(),displayMonth.getMonth()-1,1);renderCalendar();});
+  nextMonth.addEventListener('click',()=>{displayMonth=new Date(displayMonth.getFullYear(),displayMonth.getMonth()+1,1);renderCalendar();});
+  for (const input of [nameInput,phoneInput,consentInput]) input.addEventListener('input',updateSubmit);
+  availabilityButton.addEventListener('click',async()=>{
+    if(!selectedDate){appointmentError.textContent='Selecciona una fecha.';return;}
+    if(selectedDate < todayAtSalon()){appointmentError.textContent='Esa fecha ya pasó.';renderCalendar();return;}
+    if(!wa){appointmentError.textContent='Falta WhatsApp del salón.';return;}
+    const dateText=dayFormatter.format(selectedDate);
+    if(hasLive) {
+      if(!chosenTime || !latestSlots.includes(chosenTime))return;
+      loading=true;updateSubmit();appointmentError.textContent='';
+      try {
+        const phone=phoneInput.value.replace(/\D/g,'');
+        const result=await callBooking('reserve',{date:dateKey(selectedDate),time:chosenTime,
+          name:nameInput.value.trim(),phone,service:serviceInput.value.trim(),consent:consentInput.checked,website:hiddenWebsite.value});
+        const message=`Hola, soy ${nameInput.value.trim()} 💅. Solicité un horario en Dibújame Nails Studio para el ${dateText} a las ${chosenTime}. Folio: ${result.id.slice(0,8)}. ¿Me confirman mi cita? Sé que el apartado temporal vence en 30 minutos si no se confirma.`;
+        window.location.assign(`https://wa.me/${wa}?text=${encodeURIComponent(message)}`);
+      }catch(error){
+        appointmentError.textContent=error.message;
+        if(error.code==='SLOT_TAKEN') await loadSlots();
+      }finally{loading=false;updateSubmit();}
+      return;
+    }
     const time=appointmentTime.value;
     if(!/^([01]\d|2[0-3]):[0-5]\d$/.test(time)){
-      appointmentError.textContent='Selecciona también una hora para tu cita.';appointmentTime.focus();return;
+      appointmentError.textContent='Selecciona una hora.';appointmentTime.focus();return;
     }
-    if(!wa){appointmentError.textContent='No está configurado el WhatsApp del salón.';return;}
-    const dateText=dayFormatter.format(selectedDate);
-    const message=`Hola, vi la tarjeta digital de Dibújame Nails Studio 💅. Quisiera saber si tienen disponibilidad para el ${dateText} a las ${time}. ¿Me pueden confirmar si ese horario está libre? Gracias.`;
-    // No se registra ni se confirma una cita automáticamente.
-    const link=`https://wa.me/${wa}?text=${encodeURIComponent(message)}`;
-    window.location.assign(link);
+    const message=`Hola, vi la tarjeta digital de Dibújame Nails Studio 💅. Quisiera saber si tienen disponibilidad para el ${dateText} a las ${time}. ¿Me pueden confirmar si ese horario está libre?`;
+    window.location.assign(`https://wa.me/${wa}?text=${encodeURIComponent(message)}`);
   });
 
   const share = document.getElementById('shareButton');

@@ -109,3 +109,22 @@ body.appointment-open { overflow:hidden; }
 @keyframes calendar-overlay-in { from {opacity:0} to {opacity:1} }
 @keyframes calendar-dialog-in { from {opacity:0;transform:translateY(22px)} to {opacity:1;transform:translateY(0)} }
 @media (prefers-reduced-motion:reduce) { .appointment-overlay,.appointment-dialog,.appointment-day { animation:none; transition:none; } }
+
+/* V5 · Horarios libres reales, seleccionables y accesibles */
+.live-availability[hidden],.honeypot {display:none!important}
+.live-availability {border-top:1px solid #e9c5d0;padding:7px 0 12px}
+.live-availability h3 {font-size:14px; margin:9px 0 3px; color:#6b2342}
+.live-availability h3 span {color:#bf914d}
+.live-status {font-size:12px; line-height:1.4; color:#865369; min-height:24px; margin:5px 0 10px}
+.slot-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:6px 0 14px}
+.slot-grid button {border:1px solid #d9a7b6;background:#fff9f7;border-radius:12px;padding:11px 5px;color:#7b2e4e;font:700 13px 'DM Sans',sans-serif;cursor:pointer;box-shadow:0 3px 0 #e7c4c4;transition:transform .1s,box-shadow .1s}
+.slot-grid button:active {transform:translateY(3px);box-shadow:none}
+.slot-grid button[aria-pressed=true] {background:linear-gradient(120deg,#c73c70,#8a2b55);color:#fff;border-color:#b77d78}
+.slot-grid button:focus-visible {outline:3px solid #9d2753;outline-offset:3px}
+.customer-fields {display:grid;gap:11px}
+.customer-fields label {display:grid;gap:5px;font-size:12px;font-weight:700;color:#74344d}
+.customer-fields input:not([type=checkbox]) {display:block;width:100%;min-width:0;padding:11px 12px;border:1px solid #d4a1b2;border-radius:12px;background:#fff;color:#6d2342;font:500 14px 'DM Sans',sans-serif}
+.customer-fields .consent-field {display:block;font-weight:500;line-height:1.5}
+.consent-field input {accent-color:#a92b5a;vertical-align:middle;margin-right:5px}
+.consent-field a {color:#8e2c53;text-underline-offset:3px}
+#manualTimeWrapper[hidden] {display:none!important}
