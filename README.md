@@ -1,34 +1,37 @@
-# Dibújame Nails Studio — Tarjeta digital V2
+# Dibújame Nails Studio — Versión 3.1 (botones reales + ubicación)
 
-Sitio de una sola pantalla visual diseñado para celular con accesos táctiles a WhatsApp, citas, Instagram, Facebook, TikTok y ubicación. **No es una página tipo revista o un catálogo**; es una tarjeta de enlaces interactiva, siguiendo el boceto aprobado.
+La tarjeta digital ahora está construida con **elementos HTML y CSS interactivos**; ya no es una imagen con áreas invisibles encima. Conserva el logo aprobado y tiene animación de presión, relieve, colores rosa-vino y dorado y diseño para celular. La vibración ligera se activa únicamente cuando el dispositivo/navegador la soporta (muchos iPhone no lo hacen).
 
-## Actualizar tu GitHub
+## Enlaces configurados
+
+- WhatsApp: `https://wa.me/522284045606` (número proporcionado: 2284045606).
+- Agenda: abre WhatsApp con un mensaje preparado. **No es un sistema de calendario ni reserva automática**.
+- Instagram: https://www.instagram.com/dibujame_nails/
+- Facebook: https://www.facebook.com/profile.php?id=61552756146185
+- TikTok: https://www.tiktok.com/@bonitatunailsx (conserva el usuario publicado aunque el negocio se llame Dibújame).
+- Ubicación: https://www.google.com/maps?q=19.556879,-96.916771 (abre Google Maps con las coordenadas proporcionadas).
+
+Puedes editar los enlaces directamente en `js/config.js`.
+
+## Actualizar GitHub Pages
 
 Repositorio: https://github.com/dibujamenails/dibujame-nails
 
-1. Descomprime `dibujame-nails-v2.zip`.
-2. En el repositorio, usa **Add file → Upload files**.
-3. Sube **el contenido** de la carpeta descomprimida: `index.html`, `css/`, `js/`, `assets/` y este README.
-4. Confirma el commit sobre `main`. Los archivos del mismo nombre deben reemplazarse, no duplicarse dentro de una subcarpeta `dibujame-nails-v2/`.
-5. GitHub Pages ya está configurado desde `main` / `(root)`. Si sigue habilitado, publicará la actualización automáticamente.
-6. Abre https://dibujamenails.github.io/dibujame-nails/ y recarga sin caché si sigues viendo la versión anterior.
+1. Descomprime el ZIP.
+2. En GitHub abre **Add file → Upload files** en la rama `main` y carga los **contenidos** de esta carpeta (`index.html`, `css/`, `js/`, `assets/`, `README.md`), no el ZIP ni una subcarpeta que los envuelva.
+3. Reemplaza los archivos de igual nombre y confirma el cambio con **Commit changes**.
+4. GitHub Pages ya estaba activado en `main` y `/ (root)`, así que debería publicar la nueva versión. Abre https://dibujamenails.github.io/dibujame-nails/.
+5. Si continúa la versión anterior, recarga sin caché. Los archivos llevan `?v=3.1` en sus referencias para evitar el caché viejo.
 
-## Configuración
+El archivo viejo `assets/tarjeta-digital.webp` ya **no se utiliza**; puedes borrarlo de GitHub si lo deseas, sin afectar a la nueva tarjeta.
 
-Edita **`js/config.js`**. Instagram y Facebook ya tienen enlaces reales. WhatsApp, TikTok y Maps están vacíos a propósito. Mientras estén sin configurar, al tocarlos aparece un mensaje de «Próximamente» y **no se inventan rutas**.
+## Estructura
 
-El botón «Agenda tu Cita» enviará un mensaje preescrito por WhatsApp tan pronto se configure el número.
+- `index.html`: logo, botones HTML, SVG de iconos y contenido
+- `css/styles.css`: diseño táctil, sombras, transiciones y versión móvil
+- `js/config.js`: enlaces y mensaje de WhatsApp
+- `js/app.js`: enlace de cita, animación de pulsación, compartir y mensajes
+- `assets/logo-original.png`: logo aprobado sin alteraciones
+- `assets/favicon.svg`: ícono del navegador
 
-## Archivos
-
-- `index.html`: página y áreas táctiles sobre las tarjetas de la imagen
-- `css/styles.css`: diseño adaptable y zonas táctiles
-- `js/app.js`: apertura de enlaces, compartir y mensaje pendiente
-- `js/config.js`: enlaces del negocio
-- `assets/tarjeta-digital.webp`: composición visual aprobada para la portada
-- `assets/logo-original.png`: logo original completo para redes y metadatos
-- `assets/favicon.svg`: ícono de pestaña
-
-### Sobre la versión visual
-
-Esta versión coloca áreas de enlace reales sobre cada botón del diseño para obtener una apariencia muy cercana al boceto. Por ello, el texto visible pertenece a la imagen y los textos alternativos accesibles están en HTML. Para futuras variaciones frecuentes del diseño se recomendará reconstruir la composición completamente con elementos HTML editables.
+No requiere framework, base de datos, servidor especial ni pagos; funciona con GitHub Pages.

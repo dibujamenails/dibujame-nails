@@ -1,41 +1,97 @@
 <!doctype html>
 <html lang="es-MX">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#f4d1cf" />
-  <meta name="description" content="Dibújame Nails Studio: agenda tu cita, escríbenos y descubre nuestras redes sociales." />
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="Dibújame | Nails Studio" />
-  <meta property="og:description" content="Conéctate con nosotros y luce unas uñas increíbles." />
-  <meta property="og:image" content="https://dibujamenails.github.io/dibujame-nails/assets/logo-original.png" />
-  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
-  <link rel="preload" as="image" href="assets/tarjeta-digital.webp" />
-  <link rel="stylesheet" href="css/styles.css" />
-  <script src="js/config.js" defer></script>
-  <script src="js/app.js" defer></script>
-  <title>Dibújame Nails Studio | Conéctate</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f6e4e2">
+  <meta name="description" content="Dibújame Nails Studio. Agenda tu cita, habla con nosotros y descubre nuestros diseños.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Dibújame Nails Studio · Tu espacio para brillar">
+  <meta property="og:description" content="Conéctate con nosotros y luce unas uñas increíbles. 💅">
+  <meta property="og:url" content="https://dibujamenails.github.io/dibujame-nails/">
+  <meta property="og:image" content="https://dibujamenails.github.io/dibujame-nails/assets/logo-original.png">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="preload" as="image" href="assets/logo-original.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Great+Vibes&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css?v=3.1">
+  <script src="js/config.js?v=3.1" defer></script>
+  <script src="js/app.js?v=3.1" defer></script>
+  <title>Dibújame Nails Studio · Enlaces</title>
 </head>
 <body>
-  <main class="digital-card" aria-label="Tarjeta digital de Dibújame Nails Studio">
-    <h1 class="sr-only">Dibújame Nails Studio</h1>
-    <p class="sr-only">Conéctate con nosotros. Elige uno de los siguientes enlaces.</p>
-    <img class="card-art" src="assets/tarjeta-digital.webp" alt="" width="1086" height="1448" fetchpriority="high" draggable="false" />
-    <nav class="link-hotspots" aria-label="Contacto y redes sociales">
-      <a class="touch-link whatsapp" data-action="whatsapp" href="#" aria-label="Contactar por WhatsApp"><span class="sr-only">WhatsApp — Contáctanos</span></a>
-      <a class="touch-link agenda" data-action="agenda" href="#" aria-label="Agendar una cita por WhatsApp"><span class="sr-only">Agenda tu cita</span></a>
-      <a class="touch-link instagram" data-action="instagram" href="https://www.instagram.com/dibujame_nails/" target="_blank" rel="noopener noreferrer" aria-label="Abrir Instagram de Dibújame Nails Studio"><span class="sr-only">Instagram</span></a>
-      <a class="touch-link facebook" data-action="facebook" href="https://www.facebook.com/profile.php?id=61552756146185" target="_blank" rel="noopener noreferrer" aria-label="Abrir Facebook de Dibújame Nails Studio"><span class="sr-only">Facebook</span></a>
-      <a class="touch-link tiktok" data-action="tiktok" href="#" aria-label="Abrir TikTok"><span class="sr-only">TikTok</span></a>
-      <a class="touch-link ubicacion" data-action="ubicacion" href="#" aria-label="Ver ubicación en Google Maps"><span class="sr-only">Ubicación</span></a>
-    </nav>
-  </main>
-  <footer class="card-footer">
-    <button id="shareBtn" class="share-btn" type="button" aria-label="Compartir tarjeta digital">
-      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.7 13.5 6.6 4m0-11-6.6 4"/></svg>
-      Compartir tarjeta
-    </button>
-  </footer>
-  <div id="statusToast" class="toast" role="status" aria-live="polite" hidden></div>
+  <svg class="svg-defs" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="i-whatsapp" viewBox="0 0 24 24"><path d="M20.5 11.55a8.5 8.5 0 0 1-12.6 7.4L3 20.5l1.63-4.76A8.5 8.5 0 1 1 20.5 11.55Z"/><path d="M8.1 8.15c-.4 0-.9.7-.9 1.38 0 2.02 3.12 5.38 5.84 5.9.9.18 1.85-.85 1.66-1.3-.12-.27-1.48-.9-1.72-.9-.22 0-.54.68-.86.66-.58-.04-2.69-2.15-2.65-2.7.02-.29.6-.58.6-.82 0-.26-.97-2.22-1.23-2.22Z"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 9h18M7.5 13h2M12 13h2M7.5 17h2M12 17h2"/></symbol>
+    <symbol id="i-instagram" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".9" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-tiktok" viewBox="0 0 24 24"><path d="M14 3v11.1a4.2 4.2 0 1 1-4.1-4.2v3.1a1.25 1.25 0 1 0 1.1 1.25V3h3ZM14 4c.4 2.4 2.4 4.1 5 4.3v3.1c-2-.1-3.7-.9-5-2.1"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0Z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.7 13.5 6.6 4m0-11-6.6 4"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+  </svg>
+  <div class="site-background" aria-hidden="true"><i class="ambient ambient-left"></i><i class="ambient ambient-right"></i></div>
+  <div class="app-wrap">
+    <main class="card" id="inicio">
+      <div class="edge-flourish left-edge" aria-hidden="true"></div>
+      <div class="edge-flourish right-edge" aria-hidden="true"></div>
+      <header class="masthead">
+        <div class="topline"><span class="topline-rule"></span> NAIL ART · BEAUTY <span class="topline-rule"></span></div>
+        <div class="logo-plate">
+          <img src="assets/logo-original.png" alt="Logo oficial Dibújame Nails Studio en rosa y dorado" width="1536" height="1024" class="brand-logo" fetchpriority="high" draggable="false">
+        </div>
+        <div class="intro-block">
+          <p class="intro-script">Conéctate con nosotros <span aria-hidden="true">♡</span></p>
+          <p class="intro-subtitle">UN ESPACIO HECHO PARA TI</p>
+        </div>
+      </header>
+
+      <nav class="action-stack" aria-label="Contactos y redes sociales">
+        <a class="action-link action-whatsapp" data-link="whatsapp" href="https://wa.me/522284045606" aria-label="Contáctanos por WhatsApp">
+          <span class="icon-wrap"><svg class="line-icon" aria-hidden="true"><use href="#i-whatsapp"/></svg></span>
+          <span class="vertical-stroke" aria-hidden="true"></span>
+          <span class="action-copy"><strong>WhatsApp</strong><small>Escríbenos directamente</small></span>
+          <span class="action-arrow" aria-hidden="true"><svg class="line-icon"><use href="#i-arrow"/></svg></span>
+        </a>
+        <a class="action-link action-agenda" data-link="agenda" href="https://wa.me/522284045606" aria-label="Agendar cita por WhatsApp">
+          <span class="icon-wrap"><svg class="line-icon" aria-hidden="true"><use href="#i-calendar"/></svg></span>
+          <span class="vertical-stroke" aria-hidden="true"></span>
+          <span class="action-copy"><strong>Agenda tu cita</strong><small>Reserva por WhatsApp</small></span>
+          <span class="action-arrow" aria-hidden="true"><svg class="line-icon"><use href="#i-arrow"/></svg></span>
+        </a>
+        <a class="action-link action-instagram" data-link="instagram" href="https://www.instagram.com/dibujame_nails/" aria-label="Visita nuestro Instagram">
+          <span class="icon-wrap"><svg class="line-icon" aria-hidden="true"><use href="#i-instagram"/></svg></span>
+          <span class="vertical-stroke" aria-hidden="true"></span>
+          <span class="action-copy"><strong>Instagram</strong><small>Mira nuestros diseños</small></span>
+          <span class="action-arrow" aria-hidden="true"><svg class="line-icon"><use href="#i-arrow"/></svg></span>
+        </a>
+        <a class="action-link action-facebook" data-link="facebook" href="https://www.facebook.com/profile.php?id=61552756146185" aria-label="Visita nuestro Facebook">
+          <span class="icon-wrap"><span class="fb-mark" aria-hidden="true">f</span></span>
+          <span class="vertical-stroke" aria-hidden="true"></span>
+          <span class="action-copy"><strong>Facebook</strong><small>Síguenos y conoce más</small></span>
+          <span class="action-arrow" aria-hidden="true"><svg class="line-icon"><use href="#i-arrow"/></svg></span>
+        </a>
+        <a class="action-link action-tiktok" data-link="tiktok" href="https://www.tiktok.com/@bonitatunailsx" aria-label="Visita nuestro TikTok">
+          <span class="icon-wrap"><svg class="line-icon" aria-hidden="true"><use href="#i-tiktok"/></svg></span>
+          <span class="vertical-stroke" aria-hidden="true"></span>
+          <span class="action-copy"><strong>TikTok</strong><small>Videos y tendencias</small></span>
+          <span class="action-arrow" aria-hidden="true"><svg class="line-icon"><use href="#i-arrow"/></svg></span>
+        </a>
+        <a class="action-link action-ubicacion" data-link="ubicacion" href="https://www.google.com/maps?q=19.556879,-96.916771" aria-label="Cómo llegar a Dibújame Nails Studio en Google Maps">
+          <span class="icon-wrap"><svg class="line-icon" aria-hidden="true"><use href="#i-pin"/></svg></span>
+          <span class="vertical-stroke" aria-hidden="true"></span>
+          <span class="action-copy"><strong>Ubicación</strong><small id="mapCaption">Cómo llegar al salón</small></span>
+          <span class="action-arrow" aria-hidden="true"><svg class="line-icon"><use href="#i-arrow"/></svg></span>
+        </a>
+      </nav>
+
+      <div class="signature" aria-hidden="true"><span></span><b>♡</b><span></span></div>
+      <footer class="card-bottom">
+        <p>¡Luce unas uñas increíbles!</p>
+        <button id="shareButton" class="share-button" type="button"><svg class="line-icon" aria-hidden="true"><use href="#i-share"/></svg> Compartir tarjeta</button>
+      </footer>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 </body>
 </html>

@@ -1,65 +1,97 @@
 (() => {
   'use strict';
   const config = window.DIBUJAME_CONFIG || {};
+  const buttons = document.querySelectorAll('[data-link]');
+  const toast = document.getElementById('toast');
+  let toastTimeout;
+
+  function alertUser(message) {
+    toast.textContent = message;
+    toast.hidden = false;
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => { toast.hidden = true; }, 3200);
+  }
+  function normalizeWhatsApp(value) {
+    const digits = String(value || '').replace(/\D/g, '');
+    if (digits.length === 10) return '52' + digits;
+    if (digits.length === 13 && digits.startsWith('521')) return '52' + digits.slice(3);
+    return digits.startsWith('52') && digits.length === 12 ? digits : '';
+  }
+  const wa = normalizeWhatsApp(config.whatsapp);
+  const agendaMessage = String(config.mensajeCita || 'Hola, me gustaría agendar una cita. 💅');
   const hrefs = {
-    instagram: config.instagram || 'https://www.instagram.com/dibujame_nails/',
-    facebook: config.facebook || 'https://www.facebook.com/profile.php?id=61552756146185',
+    whatsapp: wa ? `https://wa.me/${wa}` : '',
+    agenda: wa ? `https://wa.me/${wa}?text=${encodeURIComponent(agendaMessage)}` : '',
+    instagram: config.instagram || '',
+    facebook: config.facebook || '',
     tiktok: config.tiktok || '',
     ubicacion: config.maps || ''
   };
-  const rawNumber = String(config.whatsapp || '').replace(/[^0-9]/g, '');
-  // Números mexicanos de 10 dígitos se convierten a formato internacional +52.
-  let waNumber = rawNumber.length === 10 ? `52${rawNumber}` : rawNumber;
-  if (waNumber.length === 13 && waNumber.startsWith('521')) waNumber = '52' + waNumber.slice(3);
-  const waValid = /^\d{11,15}$/.test(waNumber);
-  const defaultMessage = config.mensajeCita || 'Hola, vi su página de Dibújame Nails Studio y me gustaría agendar una cita. 💅';
-  if (waValid) {
-    hrefs.whatsapp = `https://wa.me/${waNumber}`;
-    hrefs.agenda = `https://wa.me/${waNumber}?text=${encodeURIComponent(defaultMessage)}`;
-  } else {
-    hrefs.whatsapp = '';
-    hrefs.agenda = '';
+
+  function vibrate() {
+    if ('vibrate' in navigator) navigator.vibrate(12);
   }
-  const pending = {
-    whatsapp: 'Próximamente: contacto por WhatsApp.',
-    agenda: 'Próximamente: agenda de citas por WhatsApp.',
-    tiktok: 'Próximamente: nuestro TikTok.',
-    ubicacion: 'Próximamente: nuestra ubicación.'
-  };
-  const toast = document.getElementById('statusToast');
-  let hideToken;
-  function showToast(message) {
-    toast.textContent = message;
-    toast.hidden = false;
-    clearTimeout(hideToken);
-    hideToken = setTimeout(() => {toast.hidden=true;}, 3400);
+  function press(el, time = 200) {
+    el.classList.add('is-pressed');
+    clearTimeout(el._pressTimer);
+    el._pressTimer = setTimeout(() => el.classList.remove('is-pressed'), time);
   }
-  Object.entries(hrefs).forEach(([name, href]) => {
-    const anchor = document.querySelector(`[data-action="${name}"]`);
-    if (!anchor) return;
-    if (href) {
-      anchor.href = href;
-      anchor.target = '_blank';
-      anchor.rel = 'noopener noreferrer';
-    } else {
-      anchor.removeAttribute('href');
-      anchor.setAttribute('aria-label',`${anchor.getAttribute('aria-label')}. Enlace pendiente de configurar.`);
-      anchor.addEventListener('click', (e) => {e.preventDefault(); showToast(pending[name] || 'Enlace disponible próximamente.');});
-      anchor.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {e.preventDefault();showToast(pending[name] || 'Enlace disponible próximamente.');}
-      });
-      anchor.tabIndex=0;
-      anchor.setAttribute('role','button');
+
+  buttons.forEach(el => {
+    const kind = el.dataset.link;
+    const href = hrefs[kind];
+    if (href && kind === 'ubicacion' && el.tagName === 'BUTTON') {
+      const anchor = document.createElement('a');
+      for (const attr of el.attributes) {
+        if (attr.name !== 'type' && attr.name !== 'aria-label') anchor.setAttribute(attr.name, attr.value);
+      }
+      anchor.setAttribute('aria-label', 'Abrir ubicación en Google Maps');
+      anchor.innerHTML = el.innerHTML;
+      el.replaceWith(anchor);
+      el = anchor;
+      el.classList.remove('is-unavailable');
+      el.querySelector('#mapCaption').textContent = 'Cómo llegar al salón';
     }
+    if (el.tagName === 'A') {
+      if (href) el.href = href;
+      else { el.removeAttribute('href'); el.setAttribute('role', 'button'); el.tabIndex = 0; }
+    }
+    el.addEventListener('pointerdown', () => { el.classList.add('is-pressed'); vibrate(); });
+    el.addEventListener('pointercancel', () => el.classList.remove('is-pressed'));
+    el.addEventListener('pointerleave', () => el.classList.remove('is-pressed'));
+    el.addEventListener('pointerup', () => press(el, 220));
+    el.addEventListener('click', event => {
+      if (!href) {
+        event.preventDefault();
+        press(el, 220);
+        alertUser('La ubicación del salón se agregará próximamente.');
+        return;
+      }
+      // Deja sentir el botón antes de abrir el destino. Respeta Ctrl/Cmd+clic.
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      event.preventDefault();
+      press(el, 240);
+      setTimeout(() => { window.location.assign(href); }, 180);
+    });
+    if (!href) el.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); el.click(); }
+    });
   });
-  document.getElementById('shareBtn').addEventListener('click', async () => {
-    const data = {title: 'Dibújame Nails Studio', text:'Conéctate con Dibújame Nails Studio 💅',url:location.href};
+
+  const share = document.getElementById('shareButton');
+  share.addEventListener('click', async () => {
+    press(share, 240); vibrate();
+    const shareData = {title:'Dibújame Nails Studio', text:'¡Mira nuestros diseños y agenda tu cita! 💅', url:window.location.href};
     try {
-      if (navigator.share) {await navigator.share(data);return;}
-      if (navigator.clipboard && window.isSecureContext){await navigator.clipboard.writeText(location.href);showToast('¡Enlace copiado!');return;}
-      showToast('Comparte esta dirección: ' + location.href);
-    } catch(error) {
-      if (error && error.name !== 'AbortError') showToast('No se pudo compartir. Copia la URL del navegador.');
+      if (navigator.share) { await navigator.share(shareData); return; }
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(shareData.url);
+        alertUser('¡Enlace copiado! Ya puedes compartirlo.');
+        return;
+      }
+      alertUser('Comparte este enlace: ' + shareData.url);
+    } catch (error) {
+      if (error?.name !== 'AbortError') alertUser('Copia la dirección desde tu navegador.');
     }
   });
 })();
