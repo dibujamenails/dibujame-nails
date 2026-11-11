@@ -177,12 +177,33 @@
   }
   function renderSlots() {
     slotGrid.replaceChildren();
-    latestSlots.forEach(hour => {
-      const b=document.createElement('button');b.type='button';b.textContent=hour;
-      b.setAttribute('aria-pressed',String(hour===chosenTime));
-      b.addEventListener('click',()=>{chosenTime=hour;renderSlots();updateSubmit();});
-      slotGrid.appendChild(b);
-    });
+    if (!selectedDate || selectedDate.getDay() === 0) return;
+    const shifts = [
+      { name:'Turno de mañana', hours:'8:00 a 11:00 a. m.', filter:h=>Number(h.slice(0,2))<12 },
+      { name:'Turno de tarde', hours:'3:00 a 6:00 p. m.', filter:h=>Number(h.slice(0,2))>=12 }
+    ];
+    for (const shift of shifts) {
+      const section=document.createElement('section'); section.className='slot-shift';
+      const header=document.createElement('div');header.className='shift-heading';
+      const title=document.createElement('strong');title.textContent=shift.name;
+      const interval=document.createElement('small');interval.textContent=shift.hours;
+      header.append(title,interval);section.append(header);
+      const grid=document.createElement('div');grid.className='shift-grid';
+      const items=latestSlots.filter(shift.filter);
+      for(const hour of items) {
+        const button=document.createElement('button');button.type='button';
+        const num=Number(hour.slice(0,2));
+        button.textContent=`${num%12||12}:${hour.slice(3,5)} ${num<12?'a. m.':'p. m.'}`;
+        button.setAttribute('aria-label',`${shift.name} a las ${button.textContent}`);
+        button.setAttribute('aria-pressed',String(hour===chosenTime));
+        button.addEventListener('click',()=>{chosenTime=hour;renderSlots();updateSubmit();});
+        grid.append(button);
+      }
+      if(!items.length){const empty=document.createElement('p');empty.className='shift-empty';
+        empty.textContent=loading?'Consultando horarios…':'No quedan horarios libres en este turno.'; section.append(empty);}
+      else section.append(grid);
+      slotGrid.append(section);
+    }
   }
   async function callBooking(action, payload) {
     const url = action==='availability' ? `${bookingApi}?action=availability&date=${encodeURIComponent(payload.date)}` : bookingApi;

@@ -1,46 +1,50 @@
 <!doctype html>
-<html lang="es-MX">
-<head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="robots" content="noindex,nofollow"><title>Administración de citas · Dibújame Nails</title>
-  <style>
-    :root{font-family:system-ui,sans-serif;color:#60263f;background:#fff4f1}*{box-sizing:border-box}body{margin:0;padding:16px}main{max-width:900px;margin:auto}
-    h1{font-size:clamp(22px,4vw,32px)}h2{font-size:20px}section{border:1px solid #e8c9d2;border-radius:17px;background:white;padding:18px;margin:17px 0;box-shadow:0 4px 16px #a6617c1c}
-    input,select,button{font:inherit;padding:10px;border:1px solid #d2a0b2;border-radius:9px;max-width:100%}button{background:#8d3159;color:white;border:0;cursor:pointer;font-weight:700}button:disabled{opacity:.5}button.secondary{background:#ead8db;color:#60263f}
-    .form-row{display:flex;gap:10px;align-items:end;flex-wrap:wrap}.form-row label{display:grid;gap:5px;font-size:13px}.form-row button{white-space:nowrap}.booking{padding:12px 0;border-bottom:1px solid #efdbe1;display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}.booking:last-child{border:0}.booking small{display:block;margin-top:4px;color:#7d5365}.booking strong{display:block}.actions{display:flex;gap:7px;flex-wrap:wrap}.message{min-height:22px;color:#87304f;font-weight:600}.day-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;border-bottom:1px solid #eee;padding:9px 0}.day-row>strong{min-width:95px}.day-row label{font-size:12px;display:flex;align-items:center;gap:3px}.day-row input[type=time]{width:115px}#dashboard[hidden],#loginSection[hidden]{display:none}a{color:#9c3260}nav{display:flex;justify-content:space-between;align-items:center}
-  </style>
-  <script src="js/config.js?v=6.0" defer></script><script src="js/admin.js?v=6.0" defer></script>
-</head>
-<body><main>
-  <nav><h1>💅 Dibújame · Agenda</h1><a href="index.html">Ver tarjeta</a></nav>
-  <p class="message" id="message" role="status"></p>
-  <section id="loginSection"><h2>Acceso de administración</h2>
-    <p>Solo cuentas autorizadas por el propietario del proyecto Supabase.</p>
-    <form id="loginForm" class="form-row">
-      <label>Correo<input id="email" type="email" autocomplete="username" required></label>
-      <label>Contraseña<input id="password" type="password" autocomplete="current-password" required></label>
-      <button type="submit">Entrar</button>
-    </form>
+<html lang="es-MX"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#7b294f">
+<title>Panel de citas · Dibújame Nails Studio</title>
+<link rel="stylesheet" href="css/admin.css?v=7.0">
+<script src="js/config.js?v=7.0" defer></script><script src="js/admin.js?v=7.0" defer></script>
+</head><body>
+<header class="top"><div class="top-inner"><div class="brand"><span class="brand-icon">✦</span><div><strong>Dibújame</strong><small>NAILS STUDIO · ADMINISTRACIÓN</small></div></div><a href="index.html" target="_blank" rel="noopener noreferrer">Ver página ↗</a></div></header>
+<main class="container">
+ <div class="page-top"><div><span class="eyebrow">PANEL PRIVADO</span><h1>Agenda de citas</h1><p>Control de solicitudes, confirmaciones y horarios.</p></div><p id="message" class="message" role="status" aria-live="polite"></p></div>
+ <section id="loginSection" class="login-card card"><h2>Entrar a mi agenda</h2><p>Acceso exclusivo del salón. Utiliza la cuenta registrada en Supabase.</p><form id="loginForm" class="fields">
+ <label>Correo electrónico<input id="email" type="email" autocomplete="username" required></label>
+ <label>Contraseña<input id="password" type="password" autocomplete="current-password" required></label>
+ <button type="submit" class="primary">Entrar al panel</button></form></section>
+ <div id="dashboard" hidden>
+  <div class="toolbar"><span class="online-dot"></span> Agenda sincronizada con Supabase <div class="toolbar-actions"><button id="refresh" class="ghost" type="button">↻ Actualizar</button><button id="logout" class="ghost" type="button">Cerrar sesión</button></div></div>
+  <div class="stats"><div><span>Pendientes</span><strong id="countPending">0</strong><small>Por confirmar</small></div><div><span>Confirmadas</span><strong id="countConfirmed">0</strong><small>Próximas citas</small></div><div><span>Hoy</span><strong id="countToday">0</strong><small>Reservas activas</small></div></div>
+  <nav class="tabs" aria-label="Secciones del panel">
+   <button data-tab="agenda" class="selected" type="button" aria-pressed="true">📋 Agenda</button>
+   <button data-tab="nueva" type="button" aria-pressed="false">＋ Nueva cita</button>
+   <button data-tab="horarios" type="button" aria-pressed="false">🕒 Horarios</button>
+   <button data-tab="cierres" type="button" aria-pressed="false">📅 Cerrar fechas</button>
+  </nav>
+  <section class="tab-panel card" id="panel-agenda"><div class="section-title"><div><span class="eyebrow">CONTROL DIARIO</span><h2>Solicitudes y citas</h2></div><button id="agendaRefresh" class="ghost" type="button">Actualizar lista</button></div>
+    <div class="filters"><label>Mostrar<select id="filterStatus"><option value="active">Pendientes y confirmadas</option><option value="pending">Solo pendientes</option><option value="confirmed">Solo confirmadas</option><option value="cancelled">Canceladas</option><option value="all">Todas</option></select></label><label>Fecha<input id="filterDate" type="date"></label><button id="clearFilters" class="ghost" type="button">Quitar filtros</button></div>
+    <div id="bookings" class="bookings"></div><p class="hint">Confirmar o cancelar una cita actualiza los horarios libres. Los apartados pendientes caducan a los 30 minutos.</p>
   </section>
-  <div id="dashboard" hidden>
-    <div class="form-row"><button id="refresh" type="button">Actualizar agenda</button><button id="logout" type="button" class="secondary">Cerrar sesión</button></div>
-    <section><h2>Solicitudes y citas</h2><p>Las solicitudes pendientes se liberan si no las confirmas antes de 30 minutos.</p><div id="bookings"></div></section>
-    <section><h2>Horario de atención semanal</h2><p>Lunes a sábado tienen dos turnos. Si no utilizas el turno de tarde, deja vacías sus dos horas. El domingo se mantiene cerrado para reservas automáticas: las citas anticipadas se consultan por WhatsApp.</p><div id="schedule"></div></section>
-    <section><h2>Citas especiales de domingo</h2>
-      <p>Cuando acuerdes una cita dominical por WhatsApp, regístrala aquí para conservarla en la agenda. Solo la administradora puede hacer este registro.</p>
-      <form id="sundayBookingForm" class="form-row">
-        <label>Domingo elegido<input id="sundayDate" type="date" required></label>
-        <label>Hora acordada<input id="sundayTime" type="time" required></label>
-        <label>Nombre de la clienta<input id="sundayName" type="text" maxlength="80" required></label>
-        <label>WhatsApp (10 dígitos)<input id="sundayPhone" type="tel" maxlength="18" required></label>
-        <label>Servicio (opcional)<input id="sundayService" type="text" maxlength="150"></label>
-        <button type="submit">Guardar cita confirmada</button>
-      </form>
-    </section>
-    <section><h2>Duración de las citas</h2>
-      <div class="form-row"><label>Tiempo por cita<select id="duration"><option value="30">30 minutos</option><option value="60">60 minutos</option><option value="90">90 minutos</option><option value="120">120 minutos</option><option value="150">150 minutos</option><option value="180">180 minutos</option></select></label>
-      <label>Intervalo para ofrecer horarios<select id="step"><option value="15">Cada 15 minutos</option><option value="30">Cada 30 minutos</option><option value="60">Cada hora</option></select></label><button id="saveSettings" type="button">Guardar duración</button></div>
-      <p><small>Cambiar la duración no modifica citas ya apartadas o confirmadas.</small></p></section>
-    <section><h2>Cerrar un día especial</h2><div class="form-row"><label>Fecha<input id="blockedDay" type="date"></label><label>Motivo (opcional)<input id="blockedReason" type="text" maxlength="150" placeholder="Descanso o vacaciones"></label><button type="button" id="blockDay">Bloquear día</button></div><div id="blockedList"></div></section>
-  </div>
-</main></body></html>
+  <section class="tab-panel card" id="panel-nueva" hidden><span class="eyebrow">PARA CITAS QUE LLEGAN POR MENSAJE O TELÉFONO</span><h2>Registrar una cita manual</h2>
+    <p>Cuando acuerdes una cita con una clienta, anótala aquí. Funciona también para <strong>domingos con cita anticipada</strong> y revisa que no se empalme con otra.</p>
+    <form id="manualBookingForm" class="fields fields-grid">
+      <label>Fecha de la cita<input id="manualDate" type="date" required></label>
+      <label>Hora de inicio<input id="manualTime" type="time" required></label>
+      <label>Nombre de la clienta<input id="manualName" type="text" maxlength="80" autocomplete="name" required></label>
+      <label>WhatsApp (10 dígitos)<input id="manualPhone" type="tel" inputmode="tel" maxlength="18" required></label>
+      <label class="wide">Servicio o diseño (opcional)<input id="manualService" type="text" maxlength="150" placeholder="Ej. Gelish, acrílico…"></label>
+      <button class="primary wide" type="submit">Guardar cita confirmada</button>
+    </form><p class="hint">Las citas creadas aquí quedan confirmadas directamente. El mensaje por WhatsApp se envía manualmente.</p>
+  </section>
+  <section class="tab-panel card" id="panel-horarios" hidden><span class="eyebrow">CONFIGURACIÓN DEL SALÓN</span><h2>Días y dos turnos de atención</h2>
+    <div class="hours-preview"><div><b>☀ Mañana</b><strong>8:00 a. m. – 11:00 a. m.</strong></div><div><b>✦ Tarde</b><strong>3:00 p. m. – 6:00 p. m.</strong></div></div>
+    <p>Lunes a sábado pueden tener dos turnos. El domingo está reservado a citas acordadas por WhatsApp; no actives su reserva automática.</p>
+    <div id="schedule" class="weekly-schedule"></div>
+    <div class="settings"><h3>Duración de cada cita</h3><div class="fields-inline"><label>Duración<select id="duration"><option value="30">30 minutos</option><option value="60">60 minutos</option><option value="90">90 minutos</option><option value="120">120 minutos</option><option value="150">150 minutos</option><option value="180">180 minutos</option></select></label><label>Opciones de inicio<select id="step"><option value="15">Cada 15 minutos</option><option value="30">Cada 30 minutos</option><option value="60">Cada hora</option></select></label><button id="saveSettings" class="primary" type="button">Guardar</button></div><p class="hint">El cambio solo afecta nuevas citas; no modifica las ya registradas.</p></div>
+  </section>
+  <section class="tab-panel card" id="panel-cierres" hidden><span class="eyebrow">VACACIONES, DESCANSOS Y FESTIVOS</span><h2>Bloquear días</h2><p>Un día bloqueado no admite nuevas solicitudes, pero las citas existentes se deben cancelar por separado.</p>
+  <div class="fields-inline"><label>Fecha<input id="blockedDay" type="date"></label><label>Motivo<input id="blockedReason" type="text" maxlength="150" placeholder="Descanso, vacaciones…"></label><button id="blockDay" class="primary" type="button">Bloquear fecha</button></div>
+  <h3>Próximas fechas cerradas</h3><div id="blockedList"></div>
+  </section>
+ </div>
+</main><footer>Agenda privada · Dibújame Nails Studio</footer></body></html>

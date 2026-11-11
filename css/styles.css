@@ -133,3 +133,14 @@ body.appointment-open { overflow:hidden; }
 .sunday-whatsapp{display:block;margin:12px 0 4px;padding:13px 16px;text-align:center;border-radius:15px;background:linear-gradient(140deg,#8e2b56,#c04572);color:white;font-weight:700;text-decoration:none;box-shadow:0 4px 0 #6e2645;transition:transform .12s ease,box-shadow .12s ease}
 .sunday-whatsapp:active{transform:translateY(4px);box-shadow:0 1px 0 #6e2645}
 .sunday-whatsapp[hidden],.customer-fields[hidden]{display:none!important}
+
+/* V7: diferenciación visible de los dos turnos de reserva */
+#slotGrid.slot-grid {display:flex;flex-direction:column;gap:12px;margin:12px 0 15px}
+.slot-shift {border:1px solid #e7c4cf;background:rgba(255,255,255,.8);border-radius:16px;padding:12px 13px}
+.shift-heading {display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:3px 8px;margin:0 0 10px}
+.shift-heading strong {color:#762a4c;font-size:14px}
+.shift-heading small {color:#89516a;font-size:11px}
+.shift-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.shift-grid button {font-size:12px;min-height:43px;white-space:normal}
+.shift-empty {margin:8px 0 3px;color:#a06b7e;font-size:12px;font-style:italic}
+@media(min-width:420px){.shift-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
